@@ -10,6 +10,9 @@ import SwiftUI
 struct ContentView: View {
     @State private var showingScore = false
     @State private var scoreTitle = ""
+    @State private var userScore = 0
+    @State private var gameFinished = false
+    @State private var totalPlayed = 0
     
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
@@ -24,9 +27,7 @@ struct ContentView: View {
             
             VStack {
                 Spacer()
-                
-                Text("Guess the Flag")
-                    .font(.largeTitle.weight(.bold))
+                Text("Guess the Flag").font(.largeTitle.weight(.bold))
                     .foregroundColor(.white)
                 
                 VStack (spacing: 15) {
@@ -35,7 +36,6 @@ struct ContentView: View {
                             .foregroundColor(.secondary)
                             .font(.subheadline.weight(.heavy))
                         Text(countries[correctAnswer])
-                           // .foregroundColor(.blue)
                             .font(.largeTitle.weight(.semibold))
                     }
                     
@@ -43,11 +43,13 @@ struct ContentView: View {
                         Button {
                             flagTapped(number)
                         } label: {
-                            Image(countries[number])
-                                .renderingMode(.original)
-                                .clipShape(Capsule())
-                                .shadow(radius: 5)
+                            Image(countries[number]).renderingMode(.original)
+                                .clipShape(Capsule()).shadow(radius: 5)
                         }
+                    }
+                    
+                    Button("Restart") {
+                        gameFinished = true
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -57,8 +59,11 @@ struct ContentView: View {
                 
                 Spacer()
                 Spacer()
+                Text("Score: \(userScore)")
+                    .foregroundColor(.white)
+                    .font(.title.bold())
                 
-                Text("Score: ???")
+                Text("Total Guessed: \(totalPlayed)")
                     .foregroundColor(.white)
                     .font(.title.bold())
                 Spacer()
@@ -68,25 +73,43 @@ struct ContentView: View {
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
         } message: {
-            Text("Your score is ???")
+            Text("Your score is \(userScore)")
         }
-        
+        .alert("Restarting", isPresented: $gameFinished) {
+            Button("Restart", action: reset)
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Your final score is \(userScore)")
+        }
     }
     
     func flagTapped(_ number: Int) {
+        if totalPlayed == (8-1) {
+            gameFinished = true
+        } else
         if number == correctAnswer {
             scoreTitle = "Correct"
+            userScore += 1
         } else {
-            scoreTitle = "Wrong"
+            scoreTitle = "Wrong! That is the flag of  \(countries[number])"
         }
-        showingScore = true
     }
+    totalPlayed += 1
+    showingScore = true
     
     func askQuestion() {
-        countries.shuffle()
-        correctAnswer = Int.random(in: 0...2)
+            countries.shuffle()
+            correctAnswer = Int.random(in: 0...2)
     }
+    
+    func reset() {
+            scoreTitle = "You have finished all 8 guesses"
+            userScore = 0
+            totalPlayed = 0
+            countries.shuffle()
+        }
 }
+    
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
