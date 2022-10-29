@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var showingScore = false
-    @State private var scoreTitle = ""
-    @State private var userScore = 0
-    @State private var gameFinished = false
-    @State private var totalPlayed = 0
+   
+    @State private var showingScore = false    //the alert is showing
+    @State private var scoreTitle = ""  //title to be shown in the alert
+    @State private var userScore = 0  //the user's score playing the game
+    @State private var gameFinished = false   //the game is finished after 8 questions completed
+    @State private var totalPlayed = 0 // tracking the number of questions answered
     
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
-    @State private var correctAnswer = Int.random(in: 0...2)
+    @State private var correctAnswer = Int.random(in: 0...2) //decide which country flag should be tapped
     
     var body: some View {
         ZStack {
@@ -44,8 +45,7 @@ struct ContentView: View {
                             flagTapped(number)
                         } label: {
                             Image(countries[number]).renderingMode(.original)
-                                .clipShape(Capsule()).shadow(radius: 5)
-                        }
+                                .clipShape(Capsule()).shadow(radius: 5)}
                     }
                     
                     Button("Restart") {
@@ -86,17 +86,21 @@ struct ContentView: View {
     func flagTapped(_ number: Int) {
         if totalPlayed == (8-1) {
             gameFinished = true
-        } else
-        if number == correctAnswer {
-            scoreTitle = "Correct"
-            userScore += 1
-        } else {
-            scoreTitle = "Wrong! That is the flag of  \(countries[number])"
         }
+        else {
+            if number == correctAnswer {
+                scoreTitle = "Correct"
+                userScore += 1
+            } else {
+                scoreTitle = "Wrong! That is the flag of  \(countries[number])"
+            }
+        }
+        
+        totalPlayed += 1
+        showingScore = true
     }
-    totalPlayed += 1
-    showingScore = true
     
+    //resets the game by shuffling up the countries and picking a new correct answer
     func askQuestion() {
             countries.shuffle()
             correctAnswer = Int.random(in: 0...2)
@@ -107,7 +111,7 @@ struct ContentView: View {
             userScore = 0
             totalPlayed = 0
             countries.shuffle()
-        }
+    }
 }
     
 
