@@ -74,6 +74,7 @@ struct ContentView: View {
             Button("Continue", action: askQuestion)
         } message: {
             Text("Your score is \(userScore)")
+            //Text("Well done!")
         }
         .alert("Restarting", isPresented: $gameFinished) {
             Button("Restart", action: reset)
@@ -89,7 +90,7 @@ struct ContentView: View {
         }
         else {
             if number == correctAnswer {
-                scoreTitle = "Correct"
+                scoreTitle = "Correct!"
                 userScore += 1
             } else {
                 scoreTitle = "Wrong! That is the flag of  \(countries[number])"
